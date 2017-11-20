@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Fabric;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -9,10 +10,18 @@ namespace SFTestStateless.Controllers
     [Route("api/[controller]")]
     public class ValuesController : Controller
     {
+        private StatelessServiceContext _serviceContext;
+
+        public ValuesController(StatelessServiceContext context)
+        {
+            this._serviceContext = context;
+        }
+
         // GET api/values
         [HttpGet]
         public IEnumerable<string> Get()
         {
+            ServiceEventSource.Current.ServiceMessage(this._serviceContext, "Get values methos has been called");
             return new string[] { "value1", "value2" };
         }
 
