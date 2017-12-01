@@ -20,7 +20,7 @@
                                     AzureActiveDirectory="true"
                                     ServerCertThumbprint="0123456789012345678901234567890123456789" />
   -->
-  <ClusterConnectionParameters />
-  <ApplicationParameterFile Path="..\ApplicationParameters\Local.5Node.xml" />
+  <ClusterConnectionParameters ConnectionEndpoint="sftest-sz.westeurope.cloudapp.azure.com:19000" />
+  <ApplicationParameterFile Path="..\ApplicationParameters\Cloud.xml" />
   <CopyPackageParameters CompressPackage="true" />
 </PublishProfile>

@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Fabric;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 
 namespace SFTestStateless.Controllers
@@ -10,11 +8,13 @@ namespace SFTestStateless.Controllers
     [Route("api/[controller]")]
     public class ValuesController : Controller
     {
-        private StatelessServiceContext _serviceContext;
-
-        public ValuesController(StatelessServiceContext context)
+        private readonly StatelessServiceContext _serviceContext;
+        
+        public ValuesController(
+            StatelessServiceContext context, 
+            IQueueClient client)
         {
-            this._serviceContext = context;
+            _serviceContext = context;
         }
 
         // GET api/values
