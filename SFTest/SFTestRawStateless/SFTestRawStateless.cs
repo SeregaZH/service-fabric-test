@@ -1,11 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Fabric;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using Microsoft.ServiceFabric.Services.Communication.Runtime;
 using Microsoft.ServiceFabric.Services.Runtime;
+using Microsoft.ServiceFabric.Services.Communication.AspNetCore;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.DependencyInjection;
+using System.IO;
 
 namespace SFTestRawStateless
 {
@@ -26,7 +26,23 @@ namespace SFTestRawStateless
         {
             return new ServiceInstanceListener[]
             {
-                new ServiceInstanceListener(context => new CustomListener())
+                new ServiceInstanceListener(
+                    context => 
+                        new WebListenerCommunicationListener(context, "ServiceEndpoint", (url, listener) => {
+
+                            var hostBuilder = new WebHostBuilder()
+                                .UseWebListener()
+                                .ConfigureServices(services =>  {
+                                    services.AddSingleton<StatelessServiceContext>(context);
+                                })
+                                .UseContentRoot(Directory.GetCurrentDirectory())
+                                .UseStartup<Startup>()
+                                .UseServiceFabricIntegration(listener, ServiceFabricIntegrationOptions.None)
+                                .UseUrls(url);
+
+                            return hostBuilder.Build();
+                        })
+                    )
             };
         }
 
