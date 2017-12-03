@@ -27,6 +27,14 @@ namespace STTestBackend
             {
                 var data = Encoding.UTF8.GetString(eventData?.Body != null ? eventData.Body.Array : new byte[0], eventData.Body.Offset, eventData.Body.Count);
                 var person = JsonConvert.DeserializeObject<Person>(data);
+                var dataPerson = new Model.Person()
+                {
+                    FirstName = person.FirstName,
+                    LastName = person.LastName,
+                    BirthDate = person.DateOfBirdth,
+                    Id = Guid.NewGuid(),
+                    FullName = $"{person.FirstName} {person.LastName}"
+                };
             }
 
             return context.CheckpointAsync();
