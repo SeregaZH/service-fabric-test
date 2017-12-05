@@ -12,6 +12,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.ServiceFabric.Services.Communication.AspNetCore;
 using Microsoft.ServiceFabric.Services.Communication.Runtime;
 using Microsoft.ServiceFabric.Services.Runtime;
+using STTestBackend.Repository;
 
 namespace STTestBackend
 {
@@ -20,27 +21,43 @@ namespace STTestBackend
     /// </summary>
     internal sealed class STTestBackend : StatelessService
     {
-        private const string ConnectionStirng = "Endpoint=sb://sftest-ns.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=us5ko0G3XUu4qZhD2nmyvaXWjAfxKUI9mPihWzy3f58=";
-        private const string EntityPath = "sftest-eh";
         private const string LeaseConnection = "lease1";
+        private readonly StatelessServiceContext _serviceContext;
 
-        private const string StoreConnectionString =
-            "DefaultEndpointsProtocol=https;AccountName=sftestsz;AccountKey=7FhNYKX4Q7eCPykhDrPdTWiVaf6b6XfMirivcykniW2DB5hwCEzvDn8/J5GTGpvs0rKQGL+cDwscyIrTvKHtPQ==;EndpointSuffix=core.windows.net";
         public STTestBackend(StatelessServiceContext context)
             : base(context)
-        { }
-
-        protected override Task RunAsync(CancellationToken cancellationToken)
         {
+            _serviceContext = context;
+        }
+
+        protected override async Task RunAsync(CancellationToken cancellationToken)
+        {
+            var configurationPackage = _serviceContext.CodePackageActivationContext.GetConfigurationPackageObject("Config");
+            var connectionString = configurationPackage.Settings.Sections["ConnectionString"].Parameters["SFTestDBConnection"].Value;
             var eventProcessorHost = new EventProcessorHost(
-                    EntityPath,
+                    configurationPackage.Settings.Sections["ConnectionString"].Parameters["sftest-eh"].Value,
                     PartitionReceiver.DefaultConsumerGroupName,
-                    ConnectionStirng,
-                    StoreConnectionString,
+                    configurationPackage.Settings.Sections["ConnectionString"].Parameters["SFTestEventHub"].Value,
+                    configurationPackage.Settings.Sections["ConnectionString"].Parameters["SFTestDB"].Value,
                     LeaseConnection);
-            eventProcessorHost.RegisterEventProcessorAsync<PersonEventProcessor>();
+            await eventProcessorHost.RegisterEventProcessorFactoryAsync(new A(connectionString));
             cancellationToken.Register(async () => await eventProcessorHost.UnregisterEventProcessorAsync());
-            return base.RunAsync(cancellationToken);
+            await base.RunAsync(cancellationToken);
+        }
+    }
+
+    public class A : IEventProcessorFactory
+    {
+        private readonly string _connectionString;
+
+        public A(string connectionString)
+        {
+            _connectionString = connectionString;
+        }
+
+        public IEventProcessor CreateEventProcessor(PartitionContext context)
+        {
+            return new PersonEventProcessor(new PersonRepository<Model.Person>(_connectionString));
         }
     }
 }

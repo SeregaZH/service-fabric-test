@@ -6,11 +6,20 @@ using System.Threading.Tasks;
 using Microsoft.Azure.EventHubs;
 using Microsoft.Azure.EventHubs.Processor;
 using Newtonsoft.Json;
+using STTestBackend.Model;
+using STTestBackend.Repository;
 
 namespace STTestBackend
 {
     public class PersonEventProcessor : IEventProcessor
     {
+        private readonly IRepository<Model.Person> _personRepository;
+
+        public PersonEventProcessor(IRepository<Model.Person> personRepository)
+        {
+            _personRepository = personRepository;
+        }
+
         public Task OpenAsync(PartitionContext context)
         {
             return Task.CompletedTask;
