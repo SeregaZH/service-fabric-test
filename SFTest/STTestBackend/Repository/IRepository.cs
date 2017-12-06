@@ -1,9 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System.Threading.Tasks;
 
 namespace STTestBackend.Repository
 {
     public interface IRepository<T> where T : class
     {
-        bool Create(T entity);
+        Task<bool> CreateAsync(T entity);
     }
 }

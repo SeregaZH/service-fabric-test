@@ -18,7 +18,7 @@ namespace SFTestStateless.Controllers
         }
 
         [HttpPost]
-        public async void PostAsync(Person persons)
+        public async void PostAsync([FromBody]Person persons)
         {
             await _sender.SendAsync(persons);
         }
@@ -26,7 +26,7 @@ namespace SFTestStateless.Controllers
         [HttpGet]
         public IEnumerable<Person> Get()
         {
-            return new[] { new Person() };
+            await 
         }
     }
 }

@@ -22,20 +22,18 @@ namespace STTestBackend
     internal sealed class STTestBackend : StatelessService
     {
         private const string LeaseConnection = "lease1";
-        private readonly StatelessServiceContext _serviceContext;
 
         public STTestBackend(StatelessServiceContext context)
             : base(context)
         {
-            _serviceContext = context;
         }
 
         protected override async Task RunAsync(CancellationToken cancellationToken)
         {
-            var configurationPackage = _serviceContext.CodePackageActivationContext.GetConfigurationPackageObject("Config");
+            var configurationPackage = Context.CodePackageActivationContext.GetConfigurationPackageObject("Config");
             var connectionString = configurationPackage.Settings.Sections["ConnectionString"].Parameters["SFTestDBConnection"].Value;
             var eventProcessorHost = new EventProcessorHost(
-                    configurationPackage.Settings.Sections["ConnectionString"].Parameters["sftest-eh"].Value,
+                    configurationPackage.Settings.Sections["ConnectionString"].Parameters["EntityPath"].Value,
                     PartitionReceiver.DefaultConsumerGroupName,
                     configurationPackage.Settings.Sections["ConnectionString"].Parameters["SFTestEventHub"].Value,
                     configurationPackage.Settings.Sections["ConnectionString"].Parameters["SFTestDB"].Value,

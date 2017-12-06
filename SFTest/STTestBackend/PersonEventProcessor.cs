@@ -30,7 +30,7 @@ namespace STTestBackend
             return Task.CompletedTask;
         }
 
-        public Task ProcessEventsAsync(PartitionContext context, IEnumerable<EventData> messages)
+        public async Task ProcessEventsAsync(PartitionContext context, IEnumerable<EventData> messages)
         {
             foreach (var eventData in messages)
             {
@@ -44,9 +44,10 @@ namespace STTestBackend
                     Id = Guid.NewGuid(),
                     FullName = $"{person.FirstName} {person.LastName}"
                 };
+                await _personRepository.CreateAsync(dataPerson);
             }
 
-            return context.CheckpointAsync();
+            await context.CheckpointAsync();
         }
 
         public Task ProcessErrorAsync(PartitionContext context, Exception error)

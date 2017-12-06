@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace STTestBackend.Repository
 {
@@ -15,12 +16,20 @@ namespace STTestBackend.Repository
             _connectionString = connectionString;
         }
 
-        public bool Create(Model.Person entity)
+        public async Task<bool> CreateAsync(Model.Person entity)
         {
             int rowsAffected = 0;
             using (var connection = new SqlConnection(_connectionString))
             {
-                rowsAffected = connection.Execute(@"INSERT Persons([CustomerFirstName],[CustomerLastName],[IsActive]) values (@CustomerFirstName, @CustomerLastName, @IsActive)", new { CustomerFirstName = ourCustomer.CustomerFirstName, CustomerLastName = ourCustomer.CustomerLastName, IsActive = true });
+                rowsAffected = await connection.ExecuteAsync(
+                    @"INSERT Persons([Id],[FirstName],[LastName],[FullName],[BirthDate]) values (@Id, @FirstName, @LastName,@FullName,@BirthDate)", 
+                    new {
+                        Id = entity.Id,
+                        LastName = entity.LastName,
+                        FirstName = entity.FirstName,
+                        FullName = entity.FullName,
+                        BirthDate = entity.BirthDate
+                    });
             }
 
             return rowsAffected > 0;
