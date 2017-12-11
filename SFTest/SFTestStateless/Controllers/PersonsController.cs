@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using SFTestStateless.Models;
 
 namespace SFTestStateless.Controllers
@@ -21,12 +17,6 @@ namespace SFTestStateless.Controllers
         public async void PostAsync([FromBody]Person persons)
         {
             await _sender.SendAsync(persons);
-        }
-
-        [HttpGet]
-        public IEnumerable<Person> Get()
-        {
-            await 
         }
     }
 }
