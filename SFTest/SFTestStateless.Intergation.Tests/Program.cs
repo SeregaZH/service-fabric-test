@@ -46,16 +46,25 @@ namespace SFTestStateless.Intergation.Tests
 
         static CancellationTokenSource PersonTest(HttpClient client, CancellationTokenSource tokenSource)
         {
-            var task = Task.Factory.StartNew(() => 
+            Task.Factory.StartNew(() => 
             {
-                for (int i = 0; i < 10; i++)
+                try
                 {
-                    var jsonContent = JsonConvert.SerializeObject(new PersonProxy($"Joe-{i}", $"Foe-{i}", DateTime.Now));
-                    HttpContent content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
-                    var result = client.PostAsync("/api/persons", content).GetAwaiter().GetResult();
-                    var responseContent = result.Content.ReadAsStringAsync().GetAwaiter().GetResult();
-                    Console.WriteLine($"Status: {result.StatusCode}, Content: {responseContent}");
+                    for (int i = 0; i < 10; i++)
+                    {
+                        var jsonContent = JsonConvert.SerializeObject(new PersonProxy($"Joe-{i}", $"Foe-{i}", DateTime.Now));
+                        HttpContent content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
+                        var result = client.PostAsync("/api/persons", content).GetAwaiter().GetResult();
+                        var responseContent = result.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+                        Console.WriteLine($"Status: {result.StatusCode}, Content: {responseContent}, Type: Person");
+                        Task.Delay(1000).Wait();
+                    }
                 }
+                catch (Exception e) 
+                {
+                    Console.WriteLine("Person is off");
+                }
+                
             }, tokenSource.Token);
 
             return tokenSource;
@@ -63,11 +72,55 @@ namespace SFTestStateless.Intergation.Tests
 
         static CancellationTokenSource TemperatureTest(HttpClient client, CancellationTokenSource tokenSource)
         {
+            var random = new Random();
+            Task.Factory.StartNew(() => 
+            {
+                try
+                {
+                    while (!tokenSource.IsCancellationRequested)
+                    {
+                        var temperature = new Quantity<int>(random.Next(288, 320), new Unit("K"));
+                        var jsonTemperature = JsonConvert.SerializeObject(temperature);
+                        HttpContent content = new StringContent(jsonTemperature, Encoding.UTF8, "application/json");
+                        var result = client.PostAsync("api/temperature", content, tokenSource.Token).GetAwaiter().GetResult();
+                        var responseContent = result.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+                        Console.WriteLine($"Status: {result.StatusCode}, Content: {responseContent}, Type: Temperature");
+                        Task.Delay(1000).Wait();
+                    }
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine("Temperature is off");
+                }                
+            }, tokenSource.Token);
+
             return tokenSource;
         }
 
         static CancellationTokenSource PressureTest(HttpClient client, CancellationTokenSource tokenSource)
         {
+            var random = new Random();
+            Task.Factory.StartNew(() =>
+            {
+                try
+                {
+                    while (!tokenSource.IsCancellationRequested)
+                    {
+                        var temperature = new Quantity<int>(random.Next(200, 400), new Unit("Ba"));
+                        var jsonTemperature = JsonConvert.SerializeObject(temperature);
+                        HttpContent content = new StringContent(jsonTemperature, Encoding.UTF8, "application/json");
+                        var result = client.PostAsync("api/pressure", content, tokenSource.Token).GetAwaiter().GetResult();
+                        var responseContent = result.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+                        Console.WriteLine($"Status: {result.StatusCode}, Content: {responseContent}, Type: Pressure");
+                        Task.Delay(1000).Wait();
+                    }
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine("Pressure is off");
+                }
+            }, tokenSource.Token);
+
             return tokenSource;
         }
     }
