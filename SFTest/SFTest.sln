@@ -15,7 +15,9 @@ Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "SFTestDB", "SFTestDB\SFTest
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "IntegrationTests", "IntegrationTests", "{24490FDD-6ED6-4D16-982E-1A10C69C66EC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SFTestStateless.Intergation.Tests", "SFTestStateless.Intergation.Tests\SFTestStateless.Intergation.Tests.csproj", "{CE314E86-1EF1-4D22-90EA-F1B6F68EB66E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SFTestStateless.Intergation.Tests", "SFTestStateless.Intergation.Tests\SFTestStateless.Intergation.Tests.csproj", "{CE314E86-1EF1-4D22-90EA-F1B6F68EB66E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConfigurationService", "ConfigurationService\ConfigurationService.csproj", "{60D8E942-1D22-4CDB-8379-8E06E10741EC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -75,6 +77,12 @@ Global
 		{CE314E86-1EF1-4D22-90EA-F1B6F68EB66E}.Release|Any CPU.Build.0 = Release|Any CPU
 		{CE314E86-1EF1-4D22-90EA-F1B6F68EB66E}.Release|x64.ActiveCfg = Release|Any CPU
 		{CE314E86-1EF1-4D22-90EA-F1B6F68EB66E}.Release|x64.Build.0 = Release|Any CPU
+		{60D8E942-1D22-4CDB-8379-8E06E10741EC}.Debug|Any CPU.ActiveCfg = Debug|x64
+		{60D8E942-1D22-4CDB-8379-8E06E10741EC}.Debug|x64.ActiveCfg = Debug|x64
+		{60D8E942-1D22-4CDB-8379-8E06E10741EC}.Debug|x64.Build.0 = Debug|x64
+		{60D8E942-1D22-4CDB-8379-8E06E10741EC}.Release|Any CPU.ActiveCfg = Release|x64
+		{60D8E942-1D22-4CDB-8379-8E06E10741EC}.Release|x64.ActiveCfg = Release|x64
+		{60D8E942-1D22-4CDB-8379-8E06E10741EC}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

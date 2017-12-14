@@ -32,6 +32,7 @@
     <Content Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\ConfigurationService\ConfigurationService.csproj" />
     <ProjectReference Include="..\SFTestRawStateless\SFTestRawStateless.csproj" />
     <ProjectReference Include="..\SFTestStateless\SFTestStateless.csproj" />
     <ProjectReference Include="..\STTestBackend\STTestBackend.csproj" />

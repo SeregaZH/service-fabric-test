@@ -23,4 +23,7 @@
   <ClusterConnectionParameters />
   <ApplicationParameterFile Path="..\ApplicationParameters\Local.5Node.xml" />
   <CopyPackageParameters CompressPackage="true" />
+  <UpgradeDeployment Mode="UnmonitoredAuto" Enabled="false">
+    <Parameters UpgradeReplicaSetCheckTimeoutSec="1" Force="True" />
+  </UpgradeDeployment>
 </PublishProfile>

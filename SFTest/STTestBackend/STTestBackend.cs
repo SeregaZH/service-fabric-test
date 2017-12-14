@@ -38,9 +38,20 @@ namespace STTestBackend
                     configurationPackage.Settings.Sections["ConnectionString"].Parameters["SFTestEventHub"].Value,
                     configurationPackage.Settings.Sections["ConnectionString"].Parameters["SFTestDB"].Value,
                     LeaseConnection);
-            await eventProcessorHost.RegisterEventProcessorFactoryAsync(new A(connectionString));
-            cancellationToken.Register(async () => await eventProcessorHost.UnregisterEventProcessorAsync());
-            await base.RunAsync(cancellationToken);
+
+            try
+            {
+                await eventProcessorHost.RegisterEventProcessorFactoryAsync(new A(connectionString));
+                cancellationToken.Register(async () => await eventProcessorHost.UnregisterEventProcessorAsync());
+            }
+            catch (Exception e)
+            {
+
+            }
+            finally
+            {
+                await base.RunAsync(cancellationToken);
+            }
         }
     }
 
