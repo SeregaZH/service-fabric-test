@@ -1,16 +1,21 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Fabric;
-using Microsoft.ServiceFabric.Services.Communication.Runtime;
-using Microsoft.ServiceFabric.Services.Runtime;
-using Microsoft.ServiceFabric.Services.Communication.AspNetCore;
+using System.IO;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
-using System.IO;
+using Microsoft.ServiceFabric.Services.Communication.AspNetCore;
+using Microsoft.ServiceFabric.Services.Communication.Runtime;
+using Microsoft.ServiceFabric.Services.Runtime;
+using Microsoft.ServiceFabric.Data;
 
 namespace ConfigurationService
 {
     /// <summary>
-    /// An instance of this class is created for each service replica by the Service Fabric runtime.
+    /// The FabricRuntime creates an instance of this class for each service type instance. 
     /// </summary>
     internal sealed class ConfigurationService : StatefulService
     {
@@ -19,33 +24,30 @@ namespace ConfigurationService
         { }
 
         /// <summary>
-        /// Optional override to create listeners (e.g., HTTP, Service Remoting, WCF, etc.) for this service replica to handle client or user requests.
+        /// Optional override to create listeners (like tcp, http) for this service instance.
         /// </summary>
-        /// <remarks>
-        /// For more information on service communication, see https://aka.ms/servicefabricservicecommunication
-        /// </remarks>
-        /// <returns>A collection of listeners.</returns>
+        /// <returns>The collection of listeners.</returns>
         protected override IEnumerable<ServiceReplicaListener> CreateServiceReplicaListeners()
         {
             return new ServiceReplicaListener[]
             {
-                new ServiceReplicaListener(
-                    context =>
-                        new WebListenerCommunicationListener(context, "ServiceEndpoint", (url, listener) => {
+                new ServiceReplicaListener(serviceContext =>
+                    new KestrelCommunicationListener(serviceContext, (url, listener) =>
+                    {
+                        ServiceEventSource.Current.ServiceMessage(serviceContext, $"Starting Kestrel on {url}");
 
-                            var hostBuilder = new WebHostBuilder()
-                                .UseWebListener()
-                                .ConfigureServices(services =>  {
-                                    services.AddSingleton<StatefulServiceContext>(context);
-                                })
-                                .UseContentRoot(Directory.GetCurrentDirectory())
-                                .UseStartup<Startup>()
-                                .UseServiceFabricIntegration(listener, ServiceFabricIntegrationOptions.None)
-                                .UseUrls(url);
-
-                            return hostBuilder.Build();
-                        })
-                    )
+                        return new WebHostBuilder()
+                                    .UseKestrel()
+                                    .ConfigureServices(
+                                        services => services
+                                            .AddSingleton<StatefulServiceContext>(serviceContext)
+                                            .AddSingleton<IReliableStateManager>(this.StateManager))
+                                    .UseContentRoot(Directory.GetCurrentDirectory())
+                                    .UseStartup<Startup>()
+                                    .UseServiceFabricIntegration(listener, ServiceFabricIntegrationOptions.UseUniqueServiceUrl)
+                                    .UseUrls(url)
+                                    .Build();
+                    }))
             };
         }
     }
