@@ -60,5 +60,6 @@
   </ItemGroup>
   <ItemGroup>
     <Build Include="Persons.sql" />
+    <Build Include="CustomConfig.sql" />
   </ItemGroup>
 </Project>

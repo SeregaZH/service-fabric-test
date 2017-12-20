@@ -1,14 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ConfigurationService.Controllers
 {
     [Route("api/[controller]")]
-    public class ValuesController : Controller
+    public class ConfigController : Controller
     {
+        private readonly IDataProvider<Guid, CustomConfig> _dataProvider;
+
+        public ConfigController(IDataProvider<Guid, CustomConfig> dataProvider)
+        {
+            _dataProvider = dataProvider;
+        }
+        
         // GET api/values
         [HttpGet]
         public IEnumerable<string> Get()
@@ -18,9 +24,9 @@ namespace ConfigurationService.Controllers
 
         // GET api/values/5
         [HttpGet("{id}")]
-        public string Get(int id)
+        public async Task<CustomConfig> GetAsync(Guid id)
         {
-            return "value";
+            return await _dataProvider.GetAsync(id);
         }
 
         // POST api/values
