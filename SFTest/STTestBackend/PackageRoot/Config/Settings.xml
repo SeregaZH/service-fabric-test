@@ -4,7 +4,7 @@
   <Section Name="ConnectionString">
     <Parameter Name="SFTestEventHub" Value="Endpoint=sb://sftest-ns.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=us5ko0G3XUu4qZhD2nmyvaXWjAfxKUI9mPihWzy3f58=" />
     <Parameter Name="SFTestDB" Value="DefaultEndpointsProtocol=https;AccountName=sftestsz;AccountKey=7FhNYKX4Q7eCPykhDrPdTWiVaf6b6XfMirivcykniW2DB5hwCEzvDn8/J5GTGpvs0rKQGL+cDwscyIrTvKHtPQ==;EndpointSuffix=core.windows.net" />
-    <Parameter Name="SFTestDBConnection" Value="Server=tcp:sftest-sz.database.windows.net,1433;Initial Catalog=SFTest;Persist Security Info=False;User ID=seregazh;Password=Mypass4710;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;" />
+    <Parameter Name="SFTestDBConnection" Value="Server=tcp:sftest-sz.database.windows.net,1433;Initial Catalog=SFTest;Persist Security Info=False;User ID=seregazh;Password=********;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;" />
     <Parameter Name="EntityPath" Value="sftest-eh" />
   </Section>
 </Settings>

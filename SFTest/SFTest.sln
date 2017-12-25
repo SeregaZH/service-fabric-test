@@ -15,9 +15,9 @@ Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "SFTestDB", "SFTestDB\SFTest
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "IntegrationTests", "IntegrationTests", "{24490FDD-6ED6-4D16-982E-1A10C69C66EC}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SFTestStateless.Intergation.Tests", "SFTestStateless.Intergation.Tests\SFTestStateless.Intergation.Tests.csproj", "{CE314E86-1EF1-4D22-90EA-F1B6F68EB66E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SFTestStateless.Intergation", "SFTestStateless.Intergation.Tests\SFTestStateless.Intergation.csproj", "{CE314E86-1EF1-4D22-90EA-F1B6F68EB66E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConfigurationService", "ConfigurationService\ConfigurationService.csproj", "{5F3FB8D9-4F4D-4D3D-B6A9-08952595DC60}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConfigurationService", "ConfigurationService\ConfigurationService.csproj", "{5F3FB8D9-4F4D-4D3D-B6A9-08952595DC60}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestConfigService.Integration", "TestConfigService.Integration\TestConfigService.Integration.csproj", "{C181D903-C413-4B4D-B879-7EA71ADAFCD7}"
 EndProject

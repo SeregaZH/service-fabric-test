@@ -26,7 +26,15 @@ namespace ConfigurationService.Controllers
         [HttpGet("{id}")]
         public async Task<CustomConfig> GetAsync(Guid id)
         {
-            return await _dataProvider.GetAsync(id);
+            try
+            {
+                return await _dataProvider.GetAsync(id);
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
+            
         }
 
         // POST api/values

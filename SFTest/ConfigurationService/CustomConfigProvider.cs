@@ -22,8 +22,8 @@ namespace ConfigurationService
         {
             using (var connection = new SqlConnection(_configurationManager.ConnectionString))
             {
-                var config = await connection.QuerySingleOrDefault(
-                @"SELECT [Id],[ApproximationType] WHERE Id = @Id",
+                var config = await connection.QuerySingleOrDefaultAsync<CustomConfig>(
+                @"SELECT [Id],[ApproximationType] FROM CustomConfig WHERE Id = @Id",
                 new { Id = id });
                 return config;
             }
