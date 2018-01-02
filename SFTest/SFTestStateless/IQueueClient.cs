@@ -4,6 +4,6 @@ namespace SFTestStateless
 {
     public interface IQueueClient
     {
-        Task SendAsync<T>(T entity);
+        Task SendAsync<T>(T entity, string type);
     }
 }

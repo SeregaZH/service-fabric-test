@@ -22,33 +22,12 @@ namespace SFTestStateless
             _eventHubClient = EventHubClient.CreateFromConnectionString(connectionStringBuilder.ToString());
         }
 
-        public async Task SendAsync<T>(T entity)
+        public async Task SendAsync<T>(T entity, string type)
         {
-            var message = JsonConvert.SerializeObject(entity);
+            var eventObj = new Event { Type = type, Content = JsonConvert.SerializeObject(entity) };
+            var message = JsonConvert.SerializeObject(eventObj);
 
             await _eventHubClient.SendAsync(new EventData(Encoding.UTF8.GetBytes(message)));
-        }
-
-        public async Task<T> ReceiveAsync<T>()
-        {
-            var promise = new TaskCompletionSource<T>();
-
-            var receiver = _eventHubClient.CreateReceiver(
-                PartitionReceiver.DefaultConsumerGroupName, 
-                sessionId.ToString(),
-                PartitionReceiver.StartOfStream
-                );
-
-            while (true)
-            {
-                 await receiver.ReceiveAsync(1);
-            }
-
-            
-
-            // promise.SetResult();
-
-            return await promise.Task;
         }
     }
 }

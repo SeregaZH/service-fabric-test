@@ -1,16 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Fabric;
-using System.IO;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.Azure.EventHubs;
 using Microsoft.Azure.EventHubs.Processor;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.ServiceFabric.Services.Communication.AspNetCore;
-using Microsoft.ServiceFabric.Services.Communication.Runtime;
 using Microsoft.ServiceFabric.Services.Runtime;
 using STTestBackend.Repository;
 
@@ -41,7 +34,7 @@ namespace STTestBackend
 
             try
             {
-                await eventProcessorHost.RegisterEventProcessorFactoryAsync(new A(connectionString));
+                await eventProcessorHost.RegisterEventProcessorFactoryAsync(new A(connectionString, Context));
                 cancellationToken.Register(async () => await eventProcessorHost.UnregisterEventProcessorAsync());
             }
             catch (Exception e)
@@ -58,15 +51,22 @@ namespace STTestBackend
     public class A : IEventProcessorFactory
     {
         private readonly string _connectionString;
+        private readonly ServiceContext _context;
 
-        public A(string connectionString)
+        public A(string connectionString, ServiceContext context)
         {
             _connectionString = connectionString;
+            _context = context;
         }
 
         public IEventProcessor CreateEventProcessor(PartitionContext context)
         {
-            return new PersonEventProcessor(new PersonRepository<Model.Person>(_connectionString));
+            return new PersonEventProcessor(
+                _context,
+                new PersonRepository(_connectionString),
+                new TemperatureRepository(_connectionString),
+                new PressureRepository(_connectionString)
+                );
         }
     }
 }

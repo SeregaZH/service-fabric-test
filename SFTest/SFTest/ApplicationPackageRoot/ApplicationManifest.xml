@@ -1,9 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ApplicationManifest xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" ApplicationTypeName="SFTestType" ApplicationTypeVersion="1.0.0" xmlns="http://schemas.microsoft.com/2011/01/fabric">
   <Parameters>
-    <Parameter Name="ConfigurationService_MinReplicaSetSize" DefaultValue="1" />
+    <Parameter Name="ConfigurationService_MinReplicaSetSize" DefaultValue="5" />
     <Parameter Name="ConfigurationService_PartitionCount" DefaultValue="1" />
-    <Parameter Name="ConfigurationService_TargetReplicaSetSize" DefaultValue="2" />
+    <Parameter Name="ConfigurationService_TargetReplicaSetSize" DefaultValue="5" />
     <Parameter Name="STTestBackend_InstanceCount" DefaultValue="-1" />
     <Parameter Name="SFTestRawStateless_InstanceCount" DefaultValue="-1" />
     <Parameter Name="SFTestStateless_InstanceCount" DefaultValue="-1" />

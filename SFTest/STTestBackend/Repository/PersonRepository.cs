@@ -1,13 +1,10 @@
 ﻿using Dapper;
-using System;
-using System.Collections.Generic;
 using System.Data.SqlClient;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace STTestBackend.Repository
 {
-    public class PersonRepository<T> : IRepository<Model.Person>
+    public class PersonRepository : IRepository<Model.Person>
     {
         private readonly string _connectionString;
 
@@ -24,11 +21,11 @@ namespace STTestBackend.Repository
                 rowsAffected = await connection.ExecuteAsync(
                     @"INSERT Persons([Id],[FirstName],[LastName],[FullName],[BirthDate]) values (@Id, @FirstName, @LastName,@FullName,@BirthDate)", 
                     new {
-                        Id = entity.Id,
-                        LastName = entity.LastName,
-                        FirstName = entity.FirstName,
-                        FullName = entity.FullName,
-                        BirthDate = entity.BirthDate
+                         entity.Id,
+                         entity.LastName,
+                         entity.FirstName,
+                         entity.FullName,
+                         entity.BirthDate
                     });
             }
 

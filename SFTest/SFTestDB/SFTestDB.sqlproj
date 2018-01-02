@@ -61,5 +61,14 @@
   <ItemGroup>
     <Build Include="Persons.sql" />
     <Build Include="CustomConfig.sql" />
+    <Build Include="Temperature.sql" />
+    <Build Include="Pressure.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <PostDeploy Include="CustomConfig.PostDeployment.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="SFTestDB.publish.xml" />
+    <None Include="SFTestDB_1.publish.xml" />
   </ItemGroup>
 </Project>

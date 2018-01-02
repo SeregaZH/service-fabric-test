@@ -21,7 +21,7 @@ namespace TestConfigService.Integration
             var endpoint = partition.GetEndpoint();
             dynamic endpoints = JsonConvert.DeserializeObject(endpoint.Address);
             var client = new HttpClient();
-            var response = client.GetAsync(endpoints.Endpoints[""].Value + "/api/config/1c05d13fbf3448309816d614883e8df2").GetAwaiter().GetResult();
+            var response = client.GetAsync(endpoints.Endpoints["ReadonlyEndpoint"].Value + "/api/config/1c05d13fbf3448309816d614883e8df2").GetAwaiter().GetResult();
             var config = JsonConvert.DeserializeObject<CustomConfig>(response.Content.ReadAsStringAsync().GetAwaiter().GetResult());
 
             if (config != null)

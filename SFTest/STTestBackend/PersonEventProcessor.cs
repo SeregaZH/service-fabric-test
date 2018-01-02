@@ -1,23 +1,34 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Azure.EventHubs;
 using Microsoft.Azure.EventHubs.Processor;
 using Newtonsoft.Json;
-using STTestBackend.Model;
 using STTestBackend.Repository;
+using SFTestBackend.Models;
+using System.Fabric;
 
 namespace STTestBackend
 {
     public class PersonEventProcessor : IEventProcessor
     {
         private readonly IRepository<Model.Person> _personRepository;
+        private readonly IRepository<Quantity<int>> _temperatureRepository;
+        private readonly IRepository<Quantity<int>> _pressureRepository;
+        private readonly ServiceContext _context;
 
-        public PersonEventProcessor(IRepository<Model.Person> personRepository)
+        public PersonEventProcessor(
+            ServiceContext context,
+            IRepository<Model.Person> personRepository,
+            IRepository<Quantity<int>> temperatureRepository,
+            IRepository<Quantity<int>> pressureRepository
+            )
         {
+            _context = context;
             _personRepository = personRepository;
+            _pressureRepository = pressureRepository;
+            _temperatureRepository = temperatureRepository;
         }
 
         public Task OpenAsync(PartitionContext context)
@@ -35,16 +46,38 @@ namespace STTestBackend
             foreach (var eventData in messages)
             {
                 var data = Encoding.UTF8.GetString(eventData?.Body != null ? eventData.Body.Array : new byte[0], eventData.Body.Offset, eventData.Body.Count);
-                var person = JsonConvert.DeserializeObject<Person>(data);
-                var dataPerson = new Model.Person()
+                var eventObj = JsonConvert.DeserializeObject<Event>(data);
+                ServiceEventSource.Current.ServiceMessage(_context, eventObj.Type);
+                switch (eventObj.Type)
                 {
-                    FirstName = person.FirstName,
-                    LastName = person.LastName,
-                    BirthDate = person.DateOfBirdth,
-                    Id = Guid.NewGuid(),
-                    FullName = $"{person.FirstName} {person.LastName}"
-                };
-                await _personRepository.CreateAsync(dataPerson);
+                    case "temperature":
+                        {
+                            var temperature = JsonConvert.DeserializeObject<Quantity<int>>(eventObj.Content);
+                            await _temperatureRepository.CreateAsync(temperature);                            
+                            break;
+                        }
+                    case "pressure":
+                        {
+                            var pressure = JsonConvert.DeserializeObject<Quantity<int>>(eventObj.Content);
+                            await _pressureRepository.CreateAsync(pressure);
+                            break;
+                        }
+                    case "persons":
+                        {
+                            var person = JsonConvert.DeserializeObject<Person>(eventObj.Content);
+                            var dataPerson = new Model.Person()
+                            {
+                                FirstName = person.FirstName,
+                                LastName = person.LastName,
+                                BirthDate = person.DateOfBirdth,
+                                Id = Guid.NewGuid(),
+                                FullName = $"{person.FirstName} {person.LastName}"
+                            };
+                            await _personRepository.CreateAsync(dataPerson);
+                            break;
+                        }
+                }
+               
             }
 
             await context.CheckpointAsync();

@@ -53,7 +53,29 @@ namespace ConfigurationService
                                     .UseServiceFabricIntegration(listener, ServiceFabricIntegrationOptions.UseUniqueServiceUrl)
                                     .UseUrls(url)
                                     .Build();
-                    }))
+                    }), "ReadWriteEndpoint"),
+                new ServiceReplicaListener(serviceContext =>
+                    new KestrelCommunicationListener(serviceContext, (url, listener) =>
+                    {
+                        ServiceEventSource.Current.ServiceMessage(serviceContext, $"Starting Kestrel on {url}");
+                        var configurationPackage = Context.CodePackageActivationContext.GetConfigurationPackageObject("Config");
+
+                        return new WebHostBuilder()
+                                    .UseKestrel()
+                                    .ConfigureServices(
+                                        services => services
+                                            .AddSingleton<StatefulServiceContext>(serviceContext)
+                                            .AddSingleton<IReliableStateManager>(this.StateManager)
+                                            .AddSingleton<IConfigurationManager>(new ConfigurationManager(
+                                                    configurationPackage.Settings.Sections["ConnectionString"].Parameters["SFTestDB"].Value,
+                                                    new Uri(configurationPackage.Settings.Sections["ConnectionString"].Parameters["ServiceUri"].Value)
+                                                )))
+                                    .UseContentRoot(Directory.GetCurrentDirectory())
+                                    .UseStartup<Startup>()
+                                    .UseServiceFabricIntegration(listener, ServiceFabricIntegrationOptions.UseUniqueServiceUrl)
+                                    .UseUrls(url)
+                                    .Build();
+                    }), "ReadonlyEndpoint", true)
             };
         }
     }

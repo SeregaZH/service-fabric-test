@@ -1,22 +1,23 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using SFTestStateless.Models;
 
+
 namespace SFTestStateless.Controllers
 {
     [Route("api/[controller]")]
-    public class PersonsController: Controller
+    public class PressureController: Controller
     {
         private readonly IQueueClient _sender;
 
-        public PersonsController(IQueueClient sender)
+        public PressureController(IQueueClient sender)
         {
             _sender = sender;
         }
 
         [HttpPost]
-        public async void PostAsync([FromBody]Person persons)
+        public async void PostAsync([FromBody]Quantity<int> temperature)
         {
-            await _sender.SendAsync(persons, "persons");
+            await _sender.SendAsync(temperature, "pressure");
         }
     }
 }

@@ -3,5 +3,3 @@
 	[Id] UNIQUEIDENTIFIER NOT NULL PRIMARY KEY, 
     [ApproximationType] NCHAR(30) NOT NULL
 )
-
-GO
