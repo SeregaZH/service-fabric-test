@@ -33,6 +33,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ConfigurationService\ConfigurationService.csproj" />
+    <ProjectReference Include="..\SFBackendWriter\SFBackendWriter.csproj" />
     <ProjectReference Include="..\SFTestRawStateless\SFTestRawStateless.csproj" />
     <ProjectReference Include="..\SFTestStateless\SFTestStateless.csproj" />
     <ProjectReference Include="..\STTestBackend\STTestBackend.csproj" />

@@ -45,7 +45,6 @@ namespace STTestBackend
         {
             try
             {
-                ServiceEventSource.Current.ServiceMessage(_context, "batch");
                 foreach (var eventData in messages)
                 {
                     var data = Encoding.UTF8.GetString(eventData?.Body != null ? eventData.Body.Array : new byte[0],
