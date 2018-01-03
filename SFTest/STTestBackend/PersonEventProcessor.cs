@@ -43,26 +43,30 @@ namespace STTestBackend
 
         public async Task ProcessEventsAsync(PartitionContext context, IEnumerable<EventData> messages)
         {
-            foreach (var eventData in messages)
+            try
             {
-                var data = Encoding.UTF8.GetString(eventData?.Body != null ? eventData.Body.Array : new byte[0], eventData.Body.Offset, eventData.Body.Count);
-                var eventObj = JsonConvert.DeserializeObject<Event>(data);
-                ServiceEventSource.Current.ServiceMessage(_context, eventObj.Type);
-                switch (eventObj.Type)
+                ServiceEventSource.Current.ServiceMessage(_context, "batch");
+                foreach (var eventData in messages)
                 {
-                    case "temperature":
+                    var data = Encoding.UTF8.GetString(eventData?.Body != null ? eventData.Body.Array : new byte[0],
+                        eventData.Body.Offset, eventData.Body.Count);
+                    var eventObj = JsonConvert.DeserializeObject<Event>(data);
+                    // ServiceEventSource.Current.ServiceMessage(_context, eventObj.Type);
+                    switch (eventObj.Type)
+                    {
+                        case "temperature":
                         {
                             var temperature = JsonConvert.DeserializeObject<Quantity<int>>(eventObj.Content);
-                            await _temperatureRepository.CreateAsync(temperature);                            
+                            await _temperatureRepository.CreateAsync(temperature);
                             break;
                         }
-                    case "pressure":
+                        case "pressure":
                         {
                             var pressure = JsonConvert.DeserializeObject<Quantity<int>>(eventObj.Content);
                             await _pressureRepository.CreateAsync(pressure);
                             break;
                         }
-                    case "persons":
+                        case "persons":
                         {
                             var person = JsonConvert.DeserializeObject<Person>(eventObj.Content);
                             var dataPerson = new Model.Person()
@@ -76,11 +80,18 @@ namespace STTestBackend
                             await _personRepository.CreateAsync(dataPerson);
                             break;
                         }
-                }
-               
-            }
+                    }
 
-            await context.CheckpointAsync();
+                }
+            }
+            catch (Exception e)
+            {
+               // ServiceEventSource.Current.ServiceMessage(_context, e.Message);
+            }
+            finally
+            {
+                await context.CheckpointAsync();
+            }
         }
 
         public Task ProcessErrorAsync(PartitionContext context, Exception error)

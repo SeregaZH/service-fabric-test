@@ -1,18 +1,19 @@
-﻿using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Text;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
+using SFTestStateless.Intergation.Tests;
 
-namespace SFTestStateless.Intergation.Tests
+namespace SFTestStateless.Intergation
 {
     class Program
     {
-        static IDictionary<string, Func<HttpClient, CancellationTokenSource, CancellationTokenSource>> tests 
-            = new Dictionary<string, Func<HttpClient, CancellationTokenSource, CancellationTokenSource>>()
+        static IDictionary<string, Func<HttpClient, int, CancellationTokenSource, CancellationTokenSource>> tests 
+            = new Dictionary<string, Func<HttpClient, int, CancellationTokenSource, CancellationTokenSource>>()
         {
             {"person", PersonTest},
             {"temperature", TemperatureTest },
@@ -26,8 +27,11 @@ namespace SFTestStateless.Intergation.Tests
                 BaseAddress = new Uri("http://localhost:9057")
             };
 
+            var delayArg = args.FirstOrDefault(arg => arg.StartsWith("delay"));
+            var delay = int.Parse(delayArg?.Split(':')[1] ?? "1000");
             var tokens = args
-                .Select(arg => (arg, tests[arg].Invoke(client, new CancellationTokenSource())))
+                .TakeWhile(arg => !arg.StartsWith("delay"))
+                .Select(arg => (arg, tests[arg].Invoke(client, delay, new CancellationTokenSource())))
                 .ToDictionary(typle => typle.Item1, tuple => tuple.Item2);
 
             string exit = "";
@@ -44,7 +48,7 @@ namespace SFTestStateless.Intergation.Tests
             }
         }
 
-        static CancellationTokenSource PersonTest(HttpClient client, CancellationTokenSource tokenSource)
+        static CancellationTokenSource PersonTest(HttpClient client, int delay, CancellationTokenSource tokenSource)
         {
             Task.Factory.StartNew(() => 
             {
@@ -57,7 +61,7 @@ namespace SFTestStateless.Intergation.Tests
                         var result = client.PostAsync("/api/persons", content).GetAwaiter().GetResult();
                         var responseContent = result.Content.ReadAsStringAsync().GetAwaiter().GetResult();
                         Console.WriteLine($"Status: {result.StatusCode}, Content: {responseContent}, Type: Person");
-                        Task.Delay(1000).Wait();
+                        Task.Delay(delay).Wait();
                     }
                 }
                 catch (Exception e) 
@@ -70,7 +74,7 @@ namespace SFTestStateless.Intergation.Tests
             return tokenSource;
         }
 
-        static CancellationTokenSource TemperatureTest(HttpClient client, CancellationTokenSource tokenSource)
+        static CancellationTokenSource TemperatureTest(HttpClient client, int delay, CancellationTokenSource tokenSource)
         {
             var random = new Random();
             Task.Factory.StartNew(() => 
@@ -85,7 +89,7 @@ namespace SFTestStateless.Intergation.Tests
                         var result = client.PostAsync("api/temperature", content, tokenSource.Token).GetAwaiter().GetResult();
                         var responseContent = result.Content.ReadAsStringAsync().GetAwaiter().GetResult();
                         Console.WriteLine($"Status: {result.StatusCode}, Content: {responseContent}, Type: Temperature");
-                        Task.Delay(1000).Wait();
+                        Task.Delay(delay).Wait();
                     }
                 }
                 catch (Exception e)
@@ -97,7 +101,7 @@ namespace SFTestStateless.Intergation.Tests
             return tokenSource;
         }
 
-        static CancellationTokenSource PressureTest(HttpClient client, CancellationTokenSource tokenSource)
+        static CancellationTokenSource PressureTest(HttpClient client, int delay, CancellationTokenSource tokenSource)
         {
             var random = new Random();
             Task.Factory.StartNew(() =>
@@ -112,7 +116,7 @@ namespace SFTestStateless.Intergation.Tests
                         var result = client.PostAsync("api/pressure", content, tokenSource.Token).GetAwaiter().GetResult();
                         var responseContent = result.Content.ReadAsStringAsync().GetAwaiter().GetResult();
                         Console.WriteLine($"Status: {result.StatusCode}, Content: {responseContent}, Type: Pressure");
-                        Task.Delay(1000).Wait();
+                        Task.Delay(delay).Wait();
                     }
                 }
                 catch (Exception e)

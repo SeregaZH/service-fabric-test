@@ -34,7 +34,7 @@ namespace STTestBackend
 
             try
             {
-                await eventProcessorHost.RegisterEventProcessorFactoryAsync(new A(connectionString, Context));
+                await eventProcessorHost.RegisterEventProcessorFactoryAsync(new A(connectionString, Context), new EventProcessorOptions { MaxBatchSize = 50});
                 cancellationToken.Register(async () => await eventProcessorHost.UnregisterEventProcessorAsync());
             }
             catch (Exception e)
