@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Fabric;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.ServiceFabric.Services.Communication.Runtime;
+using Microsoft.ServiceBus.Messaging;
 using Microsoft.ServiceFabric.Services.Runtime;
 
 namespace SFBackendWriter
@@ -19,32 +20,34 @@ namespace SFBackendWriter
         { }
 
         /// <summary>
-        /// Optional override to create listeners (e.g., TCP, HTTP) for this service replica to handle client or user requests.
-        /// </summary>
-        /// <returns>A collection of listeners.</returns>
-        protected override IEnumerable<ServiceInstanceListener> CreateServiceInstanceListeners()
-        {
-            return new ServiceInstanceListener[0];
-        }
-
-        /// <summary>
         /// This is the main entry point for your service instance.
         /// </summary>
         /// <param name="cancellationToken">Canceled when Service Fabric needs to shut down this service instance.</param>
         protected override async Task RunAsync(CancellationToken cancellationToken)
         {
-            // TODO: Replace the following sample code with your own logic 
-            //       or remove this RunAsync override if it's not needed in your service.
 
-            long iterations = 0;
+            var configurationPackage = Context.CodePackageActivationContext.GetConfigurationPackageObject("Config");
+            var serviceBusConnectionString = configurationPackage.Settings.Sections["ConnectionString"]
+                .Parameters["SFTestServiceBus"].Value;
+
+            var factory = MessagingFactory.CreateFromConnectionString(serviceBusConnectionString);
+            var subClient = factory.CreateSubscriptionClient("temperature", "temperature-writer");
 
             while (true)
             {
                 cancellationToken.ThrowIfCancellationRequested();
+                IEnumerable<BrokeredMessage> messages = await subClient.ReceiveBatchAsync(20);
 
-                ServiceEventSource.Current.ServiceMessage(this.Context, "Working-{0}", ++iterations);
+                if (messages.Any())
+                {
+                    foreach (var message in messages)
+                    {
+                        // var st = message.GetBody<Stream>();
+                    }
+                }
 
-                await Task.Delay(TimeSpan.FromSeconds(1), cancellationToken);
+                ServiceEventSource.Current.ServiceMessage(Context, messages.Count().ToString());
+                await Task.Delay(1000, cancellationToken);
             }
         }
     }

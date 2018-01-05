@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Azure.EventHubs;
 using Microsoft.Azure.EventHubs.Processor;
+using Microsoft.Azure.ServiceBus;
 using Microsoft.ServiceFabric.Services.Runtime;
 using STTestBackend.Repository;
 
@@ -25,6 +26,8 @@ namespace STTestBackend
         {
             var configurationPackage = Context.CodePackageActivationContext.GetConfigurationPackageObject("Config");
             var connectionString = configurationPackage.Settings.Sections["ConnectionString"].Parameters["SFTestDBConnection"].Value;
+            var serviceBusConnection = configurationPackage.Settings.Sections["ConnectionString"]
+                .Parameters["SFTestServiceBus"].Value;
             var eventProcessorHost = new EventProcessorHost(
                     configurationPackage.Settings.Sections["ConnectionString"].Parameters["EntityPath"].Value,
                     PartitionReceiver.DefaultConsumerGroupName,
@@ -34,7 +37,7 @@ namespace STTestBackend
 
             try
             {
-                await eventProcessorHost.RegisterEventProcessorFactoryAsync(new A(connectionString, Context), new EventProcessorOptions { MaxBatchSize = 50});
+                await eventProcessorHost.RegisterEventProcessorFactoryAsync(new A(connectionString, serviceBusConnection, Context), new EventProcessorOptions { MaxBatchSize = 50});
                 cancellationToken.Register(async () => await eventProcessorHost.UnregisterEventProcessorAsync());
             }
             catch (Exception e)
@@ -51,12 +54,14 @@ namespace STTestBackend
     public class A : IEventProcessorFactory
     {
         private readonly string _connectionString;
+        private readonly string _serviseBusConnection;
         private readonly ServiceContext _context;
 
-        public A(string connectionString, ServiceContext context)
+        public A(string connectionString, string serviseBusConnection, ServiceContext context)
         {
             _connectionString = connectionString;
             _context = context;
+            _serviseBusConnection = serviseBusConnection;
         }
 
         public IEventProcessor CreateEventProcessor(PartitionContext context)
@@ -65,7 +70,8 @@ namespace STTestBackend
                 _context,
                 new PersonRepository(_connectionString),
                 new TemperatureRepository(_connectionString),
-                new PressureRepository(_connectionString)
+                new PressureRepository(_connectionString),
+                new TopicClient(_serviseBusConnection, "temperature")
                 );
         }
     }

@@ -8,14 +8,14 @@ namespace SFTestStateless
 {
     public class EventHubQueueClient : IQueueClient
     {
-        private const string ConnectionStirng = "Endpoint=sb://sftest-ns.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=us5ko0G3XUu4qZhD2nmyvaXWjAfxKUI9mPihWzy3f58=";
+        private const string ConnectionString = "Endpoint=sb://sftest-ns.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=us5ko0G3XUu4qZhD2nmyvaXWjAfxKUI9mPihWzy3f58=";
         private const string EntityPath = "sftest-eh";
         private readonly Guid sessionId = Guid.NewGuid();
         private readonly EventHubClient _eventHubClient;
 
         public EventHubQueueClient()
         {
-            var connectionStringBuilder = new EventHubsConnectionStringBuilder(ConnectionStirng)
+            var connectionStringBuilder = new EventHubsConnectionStringBuilder(ConnectionString)
             {
                 EntityPath = EntityPath
             };
